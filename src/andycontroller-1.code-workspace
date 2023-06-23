@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "esp32analoginputs",
+			"path": "../../esp32analoginputs"
+		}
+	],
+	"settings": {}
+}

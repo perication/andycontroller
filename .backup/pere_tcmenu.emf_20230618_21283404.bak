@@ -46,9 +46,9 @@
     {
       "parentId": 0,
       "type": "analogItem",
-      "defaultValue": "1360",
+      "defaultValue": "1370",
       "item": {
-        "maxValue": 1400,
+        "maxValue": 1370,
         "offset": 0,
         "divisor": 100,
         "unitName": "V",
@@ -88,7 +88,7 @@
     {
       "parentId": 0,
       "type": "analogItem",
-      "defaultValue": "100",
+      "defaultValue": "50",
       "item": {
         "maxValue": 100,
         "offset": 1200,
@@ -133,26 +133,6 @@
         "id": 7,
         "eepromAddress": 18,
         "readOnly": false,
-        "localOnly": false,
-        "visible": true,
-        "staticDataInRAM": false
-      }
-    },
-    {
-      "parentId": 0,
-      "type": "analogItem",
-      "defaultValue": "0",
-      "item": {
-        "maxValue": 255,
-        "offset": 0,
-        "divisor": 1,
-        "unitName": "",
-        "step": 1,
-        "name": "Loops",
-        "variableName": "loopcount",
-        "id": 8,
-        "eepromAddress": 19,
-        "readOnly": true,
         "localOnly": false,
         "visible": true,
         "staticDataInRAM": false

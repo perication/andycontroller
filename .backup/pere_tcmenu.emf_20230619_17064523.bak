@@ -46,9 +46,9 @@
     {
       "parentId": 0,
       "type": "analogItem",
-      "defaultValue": "1360",
+      "defaultValue": "1370",
       "item": {
-        "maxValue": 1400,
+        "maxValue": 1370,
         "offset": 0,
         "divisor": 100,
         "unitName": "V",
@@ -88,7 +88,7 @@
     {
       "parentId": 0,
       "type": "analogItem",
-      "defaultValue": "100",
+      "defaultValue": "50",
       "item": {
         "maxValue": 100,
         "offset": 1200,

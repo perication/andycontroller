@@ -1,20 +1,20 @@
 {
   "version": "1.00",
   "projectName": "",
-  "author": "perem1",
+  "author": "andreas",
   "items": [
     {
       "parentId": 0,
       "type": "analogItem",
       "defaultValue": "0",
       "item": {
-        "maxValue": 1500,
+        "maxValue": 2500,
         "offset": 0,
         "divisor": 100,
         "unitName": "V",
         "step": 1,
-        "name": "batteryV",
-        "variableName": "batteryV",
+        "name": "Battery",
+        "variableName": "Battery",
         "id": 2,
         "eepromAddress": 6,
         "readOnly": true,
@@ -46,9 +46,9 @@
     {
       "parentId": 0,
       "type": "analogItem",
-      "defaultValue": "1360",
+      "defaultValue": "1420",
       "item": {
-        "maxValue": 1400,
+        "maxValue": 2500,
         "offset": 0,
         "divisor": 100,
         "unitName": "V",
@@ -80,79 +80,6 @@
         "eepromAddress": 10,
         "functionName": "onTrimChanged",
         "readOnly": false,
-        "localOnly": false,
-        "visible": true,
-        "staticDataInRAM": false
-      }
-    },
-    {
-      "parentId": 0,
-      "type": "analogItem",
-      "defaultValue": "100",
-      "item": {
-        "maxValue": 100,
-        "offset": 1200,
-        "divisor": 100,
-        "unitName": "V",
-        "step": 1,
-        "name": "Lowbatlevel",
-        "variableName": "Lowbatlevel",
-        "id": 5,
-        "eepromAddress": 12,
-        "functionName": "onlowbatlevelchanged",
-        "readOnly": false,
-        "localOnly": false,
-        "visible": true,
-        "staticDataInRAM": false
-      }
-    },
-    {
-      "parentId": 0,
-      "type": "boolItem",
-      "defaultValue": "false",
-      "item": {
-        "naming": "TRUE_FALSE",
-        "name": "relayOn",
-        "variableName": "RelaymanualOn",
-        "id": 6,
-        "eepromAddress": 17,
-        "readOnly": false,
-        "localOnly": false,
-        "visible": true,
-        "staticDataInRAM": false
-      }
-    },
-    {
-      "parentId": 0,
-      "type": "boolItem",
-      "defaultValue": "false",
-      "item": {
-        "naming": "TRUE_FALSE",
-        "name": "relayOff",
-        "variableName": "RelaymanualOff",
-        "id": 7,
-        "eepromAddress": 18,
-        "readOnly": false,
-        "localOnly": false,
-        "visible": true,
-        "staticDataInRAM": false
-      }
-    },
-    {
-      "parentId": 0,
-      "type": "analogItem",
-      "defaultValue": "0",
-      "item": {
-        "maxValue": 255,
-        "offset": 0,
-        "divisor": 1,
-        "unitName": "",
-        "step": 1,
-        "name": "Loops",
-        "variableName": "loopcount",
-        "id": 8,
-        "eepromAddress": 19,
-        "readOnly": true,
         "localOnly": false,
         "visible": true,
         "staticDataInRAM": false

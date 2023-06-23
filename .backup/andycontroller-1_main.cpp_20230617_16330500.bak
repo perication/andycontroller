@@ -1,0 +1,237 @@
+#include "generated/andycontroller-1_menu.h"
+#include <Preferences.h>
+#include <ADS1X15.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+const char* ssid = "FRITZ!Powerline 1260E";
+const char* password = "81831059739106230277";
+const char* mqttServer = "test.mosquitto.org";
+const int mqttPort = 1883;
+const char* mqtt_username = "perication";
+const char* mqtt_password = "public";
+const char* mqttTopic = "voltaje";
+
+
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
+
+
+
+Preferences preferences;
+//ADS1115 ADS(0x48);
+
+const int RELAY_1_PIN = 26;
+const int RELAY_2_PIN = 27;
+
+const int BUZZER_PIN = 17;
+
+// Floats for resistor values in divider (in ohms); to measure up to 15V
+//const float R1 = 15000.0;
+//const float R2 = 7500.0;
+
+float lowbatlevel = 12.5;
+float thresholdRange = 0.3;
+
+bool relayActive = false;
+unsigned long activationStartTime = 0;
+
+/*float readVoltage(int pin) {
+    int raw = ADS.readADC(pin);
+    float voltage = ADS.toVoltage(raw);
+    Serial.println("pin: " + String(pin) + " raw: " + String(raw) + " vol: " + String(voltage));
+    voltage = voltage / (R2 / (R1 + R2));
+    return voltage;
+} */
+
+String createKeyForMenuItem(AnalogMenuItem menuItem) {
+    Serial.println("m" + String(menuItem.getId()));
+    return ("m" + String(menuItem.getId()));
+}
+
+void initDefaultPreferenceFloat(AnalogMenuItem menuItem, float defaultValue) {
+    const char *keyString = createKeyForMenuItem(menuItem).c_str();
+    if (!preferences.isKey(keyString)) {
+        preferences.putFloat(keyString, defaultValue);
+    }
+    menuItem.setFromFloatingPointValue(preferences.getFloat(keyString));
+}
+
+void initMenuByPreferences() {
+    initDefaultPreferenceFloat(menuThreshold, 13.7);
+    initDefaultPreferenceFloat(menuTrim, 0.0);
+    initDefaultPreferenceFloat(menuLowbatlevel, 12.5);
+}
+
+void setupWiFi() {
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(1000);
+        Serial.println("Conectando a WiFi...");
+    }
+    Serial.println("Conexión WiFi establecida");
+    Serial.print("Dirección IP: ");
+    Serial.println(WiFi.localIP());
+}
+
+void setupMQTT() {
+    mqttClient.setServer(mqttServer, mqttPort);
+    // Opcionalmente, establecer credenciales de autenticación si se requiere
+    // mqttClient.setCredentials(mqtt_username, mqtt_password);
+}
+
+void callbackvoltage(char* mqttTopic, byte* payload, unsigned int length) {
+    // Convertir el payload recibido en un valor float
+    String payloadStr = "";
+    for (unsigned int i = 0; i < length; i++) {
+        payloadStr += (char)payload[i];
+    }
+    float batteryV = payloadStr.toFloat();
+    Serial.println(batteryV);
+
+    // Realizar la lógica del relé en base al valor del voltaje recibido
+
+       // float batteryV = readVoltage(0);
+       
+        float trim = menuTrim.getAsFloatingPointValue();
+        float trimmedVoltage = batteryV + trim;
+        menubatteryV.setFromFloatingPointValue(trimmedVoltage);
+
+        float thresholdV = menuThreshold.getAsFloatingPointValue();
+
+        if (relayActive) {
+            if (batteryV < lowbatlevel) {
+                relayActive = false;
+                digitalWrite(RELAY_1_PIN, HIGH);
+                digitalWrite(RELAY_2_PIN, HIGH);
+                activationStartTime = 0;
+            }
+        } else {
+            if (trimmedVoltage > thresholdV - thresholdRange && trimmedVoltage < thresholdV + thresholdRange) {
+                if (activationStartTime == 0) {
+                    activationStartTime = millis();
+                } else if (millis() - activationStartTime >= 60000) {
+                    relayActive = true;
+                    digitalWrite(RELAY_1_PIN, LOW);
+                    digitalWrite(RELAY_2_PIN, LOW);
+                }
+            } else {
+                activationStartTime = 0;
+            }
+        }  
+}
+
+void reconnectMQTT() {
+  while (!mqttClient.connected()) {
+    Serial.println("Conectando al servidor MQTT...");
+    if (mqttClient.connect("denky32")) { // Nombre único del cliente MQTT
+      Serial.println("Conexión MQTT establecida");
+      mqttClient.subscribe("voltaje"); // Suscribirse al topic "topic/esp32"
+    } else {
+      Serial.print("Error al conectar al servidor MQTT. Estado: ");
+      Serial.println(mqttClient.state());
+      delay(5000);
+        }
+    }
+}
+
+
+void setup() {
+    
+    
+  Serial.begin(115200);
+
+    setupWiFi();
+    setupMQTT();
+  
+ /* WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  } 
+    
+
+    Serial.println("Connected to WiFi");
+    mqttClient.setServer(mqttServer, mqttPort);
+
+  */
+
+  //  ADS.begin();
+  //  Serial.println("ADS busy?: " + String(ADS.isBusy()) + " connected: " + String(ADS.isConnected()) + " ready: " + String(ADS.isReady()));
+
+    setupMenu();
+    renderer.turnOffResetLogic();
+
+    preferences.begin("PereController", false);
+    initMenuByPreferences();
+
+    pinMode(BUZZER_PIN, OUTPUT);
+    pinMode(RELAY_1_PIN, OUTPUT);
+    pinMode(RELAY_2_PIN, OUTPUT);
+
+    digitalWrite(RELAY_1_PIN, HIGH);
+    digitalWrite(RELAY_2_PIN, HIGH);
+
+   taskManager.scheduleFixedRate(1000, [] {
+      //  int raw = ADS.readADC(1);
+      //  float internalV = ADS.toVoltage(raw);
+      //  menuInternal.setFromFloatingPointValue(internalV);
+
+        float batteryV;
+        float trim = menuTrim.getAsFloatingPointValue();
+        float trimmedVoltage = batteryV + trim;
+        menubatteryV.setFromFloatingPointValue(trimmedVoltage);
+
+        float thresholdV = menuThreshold.getAsFloatingPointValue();
+
+        if (relayActive) {
+            if (batteryV < lowbatlevel) {
+                relayActive = false;
+                digitalWrite(RELAY_1_PIN, HIGH);
+                digitalWrite(RELAY_2_PIN, HIGH);
+                activationStartTime = 0;
+            }
+        } else {
+            if (trimmedVoltage > thresholdV - thresholdRange && trimmedVoltage < thresholdV + thresholdRange) {
+                if (activationStartTime == 0) {
+                    activationStartTime = millis();
+                } else if (millis() - activationStartTime >= 60000) {
+                    relayActive = true;
+                    digitalWrite(RELAY_1_PIN, LOW);
+                    digitalWrite(RELAY_2_PIN, LOW);
+                }
+            } else {
+                activationStartTime = 0;
+            }
+        } 
+
+    }, TIME_MILLIS); 
+}
+
+void loop() {
+       if (!mqttClient.connected()) {
+        reconnectMQTT();
+    }
+    mqttClient.loop();
+   
+    taskManager.runLoop();
+   
+}
+
+void updatePreferenceByMenuItemFloat(AnalogMenuItem menuItem) {
+    preferences.putFloat(createKeyForMenuItem(menuItem).c_str(), menuItem.getAsFloatingPointValue());
+}
+
+void CALLBACK_FUNCTION onVoltageThresholdChange(int id) {
+    updatePreferenceByMenuItemFloat(menuThreshold);
+}
+
+void CALLBACK_FUNCTION onTrimChanged(int id) {
+    updatePreferenceByMenuItemFloat(menuTrim);
+}
+
+
+void CALLBACK_FUNCTION onlowbatlevelchanged(int id) {
+    updatePreferenceByMenuItemFloat(menuLowbatlevel);
+}

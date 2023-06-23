@@ -27,14 +27,17 @@ extern GraphicsDeviceRenderer renderer;
 
 
 // Global Menu Item exports
+extern AnalogMenuItem menuloopcount;
+extern BooleanMenuItem menuRelaymanualOff;
+extern BooleanMenuItem menuRelaymanualOn;
 extern AnalogMenuItem menuLowbatlevel;
 extern AnalogMenuItem menuTrim;
 extern AnalogMenuItem menuThreshold;
 extern AnalogMenuItem menuInternal;
-extern AnalogMenuItem menuBattery;
+extern AnalogMenuItem menubatteryV;
 
 // Provide a wrapper to get hold of the root menu item and export setupMenu
-inline MenuItem& rootMenuItem() { return menuBattery; }
+inline MenuItem& rootMenuItem() { return menubatteryV; }
 void setupMenu();
 
 // Callback functions must always include CALLBACK_FUNCTION after the return type

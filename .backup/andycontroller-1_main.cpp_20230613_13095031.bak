@@ -1,0 +1,21 @@
+#include "generated/andycontroller-1_menu.h"
+
+void setup() {
+    setupMenu();
+
+}
+
+void loop() {
+    taskManager.runLoop();
+
+}
+
+
+void CALLBACK_FUNCTION onVoltageThresholdChange(int id) {
+    // TODO - your menu change code
+}
+
+
+void CALLBACK_FUNCTION onTrimChanged(int id) {
+    // TODO - your menu change code
+}

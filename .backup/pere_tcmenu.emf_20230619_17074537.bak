@@ -88,7 +88,7 @@
     {
       "parentId": 0,
       "type": "analogItem",
-      "defaultValue": "100",
+      "defaultValue": "50",
       "item": {
         "maxValue": 100,
         "offset": 1200,
