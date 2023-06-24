@@ -31,7 +31,7 @@ const int BUZZER_PIN = 17;
 //const float R2 = 7500.0;
 
 float lowbatlevel = 12.5;
-float thresholdRange = 0.15;
+float thresholdRange = 0.2;
 
 bool relayActive = false;
 bool RelaymanualOn = false;
@@ -332,6 +332,9 @@ void loop() {
     // Verificar si ha pasado más de 5 minutos desde la última recepción de un mensaje de MQTT
     if (millis() - lastMQTTMessageTime >= 5 * 60 * 1000) {
         loopCount = 0;
+            relayActive = false;
+            digitalWrite(RELAY_1_PIN, HIGH);
+            digitalWrite(RELAY_2_PIN, HIGH);
     }
 }
 
